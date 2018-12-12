@@ -29,18 +29,19 @@
         <div class="container">
 
             <div class="col-md-6">
-                <select id="gender-select" class="form-control">
-                    <option value="all">All Genders</option>
-                    <option selected value="female">Female</option>
-                    <option value="male">Male</option>
-                </select>
+                <div id="selections" class="row">
+                    <select id="gender-select" class="form-control">
+                        <option value="unisexData">All Genders</option>
+                        <option selected value="femaleData">Female</option>
+                        <option value="maleData">Male</option>
+                    </select>
+                </div>
             </div>
-
-            <hr>
 
             <div class="row">
                 <div id="chart-area"></div>
             </div>
+
         </div>
     <!-- External JS libraries -->
     <script src="js/jquery.min.js"></script>

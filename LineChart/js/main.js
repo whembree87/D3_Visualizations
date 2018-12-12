@@ -2,6 +2,9 @@ const margin = ({top: 20, right: 20, bottom: 30, left: 40});
 
 const width = 1000, height = 600;
 
+// Event listener
+$("#gender-select").on("change", update);
+
 d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
     // Time parser for x-axis
     const parseTime = d3.timeParse("%Y");
@@ -19,9 +22,25 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
         d.year = parseTime(d.year);
     });
 
-    const unisexData = _.filter(rawData, (o) => { return o.sex_name === 'Both' });
+    // Collect gender(s) data
+    const unisexData = formatDataByGender(rawData, 'Both');
+    const femaleData = formatDataByGender(rawData, 'Female');
+    const maleData = formatDataByGender(rawData, 'Male');
 
-    const opioidDataByCountry = _.groupBy(unisexData, 'location_name');
+    allData = {
+        unisexData: unisexData,
+        femaleData: femaleData,
+        maleData: maleData
+    };
+
+    // Call for first time
+    update();
+});
+
+function formatDataByGender(rawData, gender) {
+    const genderData = _.filter(rawData, (o) => { return o.sex_name === gender });
+
+    const opioidDataByCountry = _.groupBy(genderData, 'location_name');
 
     const years = _.sortBy(_.map(_.sample(opioidDataByCountry), (o) => { return o.year }));
 
@@ -40,9 +59,20 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
         'values': _.map(objs, (o) => {  return o.val })
     }));
 
-    const data = {y: 'Death Rates per 100k', series: series, years: years };
+    return {
+        y: 'Death Rates per 100k',
+        series: series,
+        years: years
+    }
+}
 
-    // -----------------------------------------------------------------------------------------------------------------
+function update() {
+    // Filter data relative to selection
+    const gender = $("#gender-select").val();
+
+    const data = allData[gender];
+
+    d3.select("svg").remove();
 
     const x = d3.scaleTime()
         .domain(d3.extent(data.years))
@@ -82,16 +112,16 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
         .call(yAxis);
 
     const path = svg.append("g")
-            .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-width", 1.5)
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-linecap", "round")
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 1.5)
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
         .selectAll("path")
         .data(data.series)
-            .enter().append("path")
-                .style("mix-blend-mode", "multiply")
-                .attr("d", d => line(d.values));
+        .enter().append("path")
+        .style("mix-blend-mode", "multiply")
+        .attr("d", d => line(d.values));
 
     svg.call(hover, path);
 
@@ -142,4 +172,4 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
             dot.attr("display", "none");
         }
     }
-});
+}
