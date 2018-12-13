@@ -51,7 +51,6 @@ function getTopKMostAfflictedCountries(gender, k) {
     }));
 
     return {
-        y: 'Global opioid deaths for all ages, rate per 100k',
         country_data: countryData,
         years: years
     }
@@ -74,16 +73,11 @@ function updateLineChart() {
         .domain([0, d3.max(data.country_data, d => d3.max(d.death_rates))]).nice()
         .range([height - margin.bottom, margin.top]);
 
-    const line = d3.line()
-        .defined(d => !isNaN(d))
-        .x((d, i) => x(data.years[i]))
-        .y(d => y(d));
-
-    const xAxis = g => g
+    const xAxis = (g) => g
         .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
 
-    const yAxis = g => g
+    const yAxis = (g) => g
         .attr("transform", `translate(${margin.left},0)`)
         .call(d3.axisLeft(y))
         .call(g => g.select(".domain"))
@@ -91,7 +85,12 @@ function updateLineChart() {
             .attr("x", 3)
             .attr("text-anchor", "start")
             .attr("font-weight", "bold")
-            .text(data.y));
+            .text('Global opioid deaths for all ages, rate per 100k'));
+
+    const line = d3.line()
+        .defined(d => !isNaN(d))
+        .x((d, i) => x(data.years[i]))
+        .y(d => y(d));
 
     const svg = d3.select("#chart-area").append('svg')
         .attr("width", width + margin.left + margin.right)
@@ -103,29 +102,33 @@ function updateLineChart() {
     svg.append("g")
         .call(yAxis);
 
-    const path = svg.append("g")
-        .attr("fill", "none")
-        .attr("stroke", "green")
-        .attr("stroke-width", 1.5)
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-linecap", "round")
+    const lineColors = d3.scaleOrdinal(d3.schemePaired);
+
+   const path = svg.append("g")
         .selectAll("path")
         .data(data.country_data)
         .enter().append("path")
         .style("mix-blend-mode", "multiply")
-        .attr("d", d => line(d.death_rates));
+        .attr("d", d => line(d.death_rates))
+        .attr("fill", "none")
+        .attr("stroke", d => lineColors(d.country_name))
+        .attr("stroke-width", 1.5)
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round");
 
     svg.call(hover, path);
 
     function hover(svg, path) {
         svg.style("position", "relative");
 
-        if ("ontouchstart" in document) svg
+        if ("ontouchstart" in document)
+            svg
             .style("-webkit-tap-highlight-color", "transparent")
             .on("touchmove", moved)
             .on("touchstart", entered)
             .on("touchend", left);
-        else svg
+        else
+            svg
             .on("mousemove", moved)
             .on("mouseenter", entered)
             .on("mouseleave", left);
@@ -148,8 +151,9 @@ function updateLineChart() {
             const i1 = d3.bisectLeft(data.years, xm, 1);
             const i0 = i1 - 1;
             const i = xm - data.years[i0] > data.years[i1] - xm ? i1 : i0;
-            const s = data.country_data.reduce((a, b) => Math.abs(a.death_rates[i] - ym) < Math.abs(b.death_rates[i] - ym) ? a : b);
-            path.attr("stroke", d => d === s ? null : "#ddd").filter(d => d === s).raise();
+            const s = data.country_data.reduce((a, b) => Math.abs(a.death_rates[i] - ym) <
+            Math.abs(b.death_rates[i] - ym) ? a : b);
+            path.attr("stroke", d => lineColors(d.country_name));
 
             dot.attr("transform", `translate(${x(data.years[i])},${y(s.death_rates[i])})`);
             dot.select("text").text(s.country_name + " " + s.death_rates[i].toFixed(2).toString());
@@ -161,7 +165,7 @@ function updateLineChart() {
         }
 
         function left() {
-            path.style("mix-blend-mode", "multiply").attr("stroke", null);
+            path.style("mix-blend-mode", "multiply").attr("stroke", d => lineColors(d.country_name));
             dot.attr("display", "none");
         }
     }
