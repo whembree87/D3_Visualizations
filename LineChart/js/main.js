@@ -1,3 +1,7 @@
+/*
+* Inspiration : https://beta.observablehq.com/@mbostock/d3-multi-line-chart#chart
+*/
+
 const margin = ({top: 20, right: 20, bottom: 30, left: 20});
 const width = 1100, height = 500;
 
@@ -27,7 +31,6 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
     updateLineChart();
 });
 
-// Take historical average and return top k
 function getTopKMostAfflictedCountries(gender, k) {
     const genderData = _.filter(cleanData, (obj) => { return obj.sex_name === gender });
 
@@ -35,6 +38,7 @@ function getTopKMostAfflictedCountries(gender, k) {
 
     const years = _.sortBy(_.map(_.sample(genderDataByCountry), (obj) => { return obj.year }));// Ascending
 
+    // Take historical average and return top k
     const avgDeathRateByCountry =_.map(genderDataByCountry, (objs) => ({
         'country_data': objs,
         'avg_death_rate': _.meanBy(objs, (obj) => { return obj.val; })
