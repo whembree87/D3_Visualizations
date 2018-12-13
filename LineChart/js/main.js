@@ -1,9 +1,9 @@
-const margin = ({top: 20, right: 20, bottom: 30, left: 40});
-
-const width = 1000, height = 600;
+const margin = ({top: 20, right: 20, bottom: 30, left: 20});
+const width = 1100, height = 500;
 
 // Event listener
-$("#gender-select").on("change", update);
+$("#gender-select").on("change", updateChart);
+$("#total-countries-select").on("change", updateChart);
 
 d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
     // Time parser for x-axis
@@ -22,23 +22,14 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
         d.year = parseTime(d.year);
     });
 
-    // Collect gender(s) data
-    const unisexData = formatDataByGender(rawData, 'Both');
-    const femaleData = formatDataByGender(rawData, 'Female');
-    const maleData = formatDataByGender(rawData, 'Male');
-
-    allData = {
-        unisexData: unisexData,
-        femaleData: femaleData,
-        maleData: maleData
-    };
+    allData = rawData;
 
     // Call for first time
-    update();
+    updateChart();
 });
 
-function formatDataByGender(rawData, gender) {
-    const genderData = _.filter(rawData, (o) => { return o.sex_name === gender });
+function getTopKMostAfflictedCountries(gender, k) {
+    const genderData = _.filter(allData, (o) => { return o.sex_name === gender });
 
     const opioidDataByCountry = _.groupBy(genderData, 'location_name');
 
@@ -50,7 +41,7 @@ function formatDataByGender(rawData, gender) {
     }));
 
     const top10HighestDeathRatesByCountry = _.map(_.orderBy(avgDeathRateByCountry, ['avg_death_rate'], ['desc']),
-        (o) => {return o.country_data}).slice(0, 10);
+        (o) => {return o.country_data}).slice(0, k);
 
     const top10ByCountry = _.groupBy(_.flatten(top10HighestDeathRatesByCountry), 'location_name');
 
@@ -60,17 +51,17 @@ function formatDataByGender(rawData, gender) {
     }));
 
     return {
-        y: 'Death Rates per 100k',
+        y: 'Global Death Rates per 100k',
         series: series,
         years: years
     }
 }
 
-function update() {
-    // Filter data relative to selection
+function updateChart() {
     const gender = $("#gender-select").val();
+    const k = $("#total-countries-select").val();
 
-    const data = allData[gender];
+    const data = getTopKMostAfflictedCountries(gender, k);
 
     d3.select("svg").remove();
 
@@ -113,7 +104,7 @@ function update() {
 
     const path = svg.append("g")
         .attr("fill", "none")
-        .attr("stroke", "steelblue")
+        .attr("stroke", "green")
         .attr("stroke-width", 1.5)
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round")
