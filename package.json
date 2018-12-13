@@ -1,5 +1,5 @@
 {
-  "name": "d3_test",
+  "name": "IHME_Visualization",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/whembree87/d3_test.git"
+    "url": "git+https://github.com/whembree87/IHME_Visualization.git"
   },
   "author": "Will Hembree",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/whembree87/d3_test/issues"
   },
-  "homepage": "https://github.com/whembree87/d3_test#readme",
+  "homepage": "https://github.com/whembree87/IHME_Visualization#readme",
   "dependencies": {
     "express": "^4.16.4",
     "lodash": "^4.17.11"

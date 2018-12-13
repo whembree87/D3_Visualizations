@@ -1,13 +1,12 @@
 const margin = ({top: 20, right: 20, bottom: 30, left: 20});
 const width = 1100, height = 500;
 
-// Event listener
-$("#gender-select").on("change", updateChart);
-$("#total-countries-select").on("change", updateChart);
+// Event listeners
+$("#gender-select").on("change", updateLineChart);
+$("#total-countries-select").on("change", updateLineChart);
 
 d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
-    // Time parser for x-axis
-    const parseTime = d3.timeParse("%Y");
+    const parseYear = d3.timeParse("%Y");
 
     // Clean data
     rawData.forEach((d) => {
@@ -19,51 +18,51 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
         d.sex_id = +d.sex_id;
         d.upper = +d.upper;
         d.val = +d.val;
-        d.year = parseTime(d.year);
+        d.year = parseYear(d.year);
     });
 
-    allData = rawData;
+    cleanData = rawData;
 
     // Call for first time
-    updateChart();
+    updateLineChart();
 });
 
+// Take historical average and return top k
 function getTopKMostAfflictedCountries(gender, k) {
-    const genderData = _.filter(allData, (o) => { return o.sex_name === gender });
+    const genderData = _.filter(cleanData, (obj) => { return obj.sex_name === gender });
 
-    const opioidDataByCountry = _.groupBy(genderData, 'location_name');
+    const genderDataByCountry = _.groupBy(genderData, 'location_name');
 
-    const years = _.sortBy(_.map(_.sample(opioidDataByCountry), (o) => { return o.year }));
+    const years = _.sortBy(_.map(_.sample(genderDataByCountry), (obj) => { return obj.year }));// Ascending
 
-    const avgDeathRateByCountry =_.map(opioidDataByCountry, (objects, key) => ({
-        'country_data': objects,
-        'avg_death_rate': _.meanBy(objects, (o) => { return +o.val; })
+    const avgDeathRateByCountry =_.map(genderDataByCountry, (objs) => ({
+        'country_data': objs,
+        'avg_death_rate': _.meanBy(objs, (obj) => { return obj.val; })
     }));
 
-    const top10HighestDeathRatesByCountry = _.map(_.orderBy(avgDeathRateByCountry, ['avg_death_rate'], ['desc']),
-        (o) => {return o.country_data}).slice(0, k);
+    const topKHighest = _.map(_.orderBy(avgDeathRateByCountry, ['avg_death_rate'], ['desc']),
+        (obj) => {return obj.country_data}).slice(0, k);
 
-    const top10ByCountry = _.groupBy(_.flatten(top10HighestDeathRatesByCountry), 'location_name');
+    const topKHighestByCountry = _.groupBy(_.flatten(topKHighest), 'location_name');
 
-    const series = _.map(top10ByCountry, (objs, key) => ({
-        'name': key,
-        'values': _.map(objs, (o) => {  return o.val })
+    const countryData  = _.map(topKHighestByCountry, (objs, key) => ({
+        country_name: key,
+        death_rates: _.map(objs, (obj) => {  return obj.val })
     }));
 
     return {
         y: 'Global opioid deaths for all ages, rate per 100k',
-        series: series,
+        country_data: countryData,
         years: years
     }
 }
 
-function updateChart() {
+function updateLineChart() {
     const gender = $("#gender-select").val();
+
     const k = $("#total-countries-select").val();
 
     const data = getTopKMostAfflictedCountries(gender, k);
-
-    console.log(data);
 
     d3.select("svg").remove();
 
@@ -72,7 +71,7 @@ function updateChart() {
         .range([margin.left, width - margin.right]);
 
     const y = d3.scaleLinear()
-        .domain([0, d3.max(data.series, d => d3.max(d.values))]).nice()
+        .domain([0, d3.max(data.country_data, d => d3.max(d.death_rates))]).nice()
         .range([height - margin.bottom, margin.top]);
 
     const line = d3.line()
@@ -111,10 +110,10 @@ function updateChart() {
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round")
         .selectAll("path")
-        .data(data.series)
+        .data(data.country_data)
         .enter().append("path")
         .style("mix-blend-mode", "multiply")
-        .attr("d", d => line(d.values));
+        .attr("d", d => line(d.death_rates));
 
     svg.call(hover, path);
 
@@ -149,11 +148,11 @@ function updateChart() {
             const i1 = d3.bisectLeft(data.years, xm, 1);
             const i0 = i1 - 1;
             const i = xm - data.years[i0] > data.years[i1] - xm ? i1 : i0;
-            const s = data.series.reduce((a, b) => Math.abs(a.values[i] - ym) < Math.abs(b.values[i] - ym) ? a : b);
+            const s = data.country_data.reduce((a, b) => Math.abs(a.death_rates[i] - ym) < Math.abs(b.death_rates[i] - ym) ? a : b);
             path.attr("stroke", d => d === s ? null : "#ddd").filter(d => d === s).raise();
 
-            dot.attr("transform", `translate(${x(data.years[i])},${y(s.values[i])})`);
-            dot.select("text").text(s.name + " " + s.values[i].toFixed(2).toString());
+            dot.attr("transform", `translate(${x(data.years[i])},${y(s.death_rates[i])})`);
+            dot.select("text").text(s.country_name + " " + s.death_rates[i].toFixed(2).toString());
         }
 
         function entered() {
