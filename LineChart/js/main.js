@@ -22,8 +22,6 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
         d.year = parseTime(d.year);
     });
 
-    console.log('raw ', rawData);
-
     allData = rawData;
 
     // Call for first time
