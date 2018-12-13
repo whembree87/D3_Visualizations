@@ -12,3 +12,7 @@
     height: 60px;
     padding: 5px 0px;
 }
+
+#gender-select {
+    margin-bottom: 15px;
+}

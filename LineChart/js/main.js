@@ -22,6 +22,8 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
         d.year = parseTime(d.year);
     });
 
+    console.log('raw ', rawData);
+
     allData = rawData;
 
     // Call for first time
@@ -51,7 +53,7 @@ function getTopKMostAfflictedCountries(gender, k) {
     }));
 
     return {
-        y: 'Global Death Rates per 100k',
+        y: 'Deaths, rate per 100k',
         series: series,
         years: years
     }
@@ -85,7 +87,7 @@ function updateChart() {
     const yAxis = g => g
         .attr("transform", `translate(${margin.left},0)`)
         .call(d3.axisLeft(y))
-        .call(g => g.select(".domain").remove())
+        .call(g => g.select(".domain"))
         .call(g => g.select(".tick:last-of-type text").clone()
             .attr("x", 3)
             .attr("text-anchor", "start")
@@ -133,7 +135,7 @@ function updateChart() {
             .attr("display", "none");
 
         dot.append("circle")
-            .attr("r", 2.5);
+            .attr("r", 3.0);
 
         dot.append("text")
             .style("font", "10px sans-serif")
@@ -149,8 +151,9 @@ function updateChart() {
             const i = xm - data.years[i0] > data.years[i1] - xm ? i1 : i0;
             const s = data.series.reduce((a, b) => Math.abs(a.values[i] - ym) < Math.abs(b.values[i] - ym) ? a : b);
             path.attr("stroke", d => d === s ? null : "#ddd").filter(d => d === s).raise();
+
             dot.attr("transform", `translate(${x(data.years[i])},${y(s.values[i])})`);
-            dot.select("text").text(s.name);
+            dot.select("text").text(s.name + " " + s.values[i].toFixed(2).toString());
         }
 
         function entered() {
