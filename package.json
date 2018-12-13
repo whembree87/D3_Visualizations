@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/whembree87/d3_test.git"
   },
-  "author": "",
+  "author": "Will Hembree",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/whembree87/d3_test/issues"
@@ -18,7 +18,6 @@
   "homepage": "https://github.com/whembree87/d3_test#readme",
   "dependencies": {
     "express": "^4.16.4",
-    "lodash": "^4.17.11",
-    "path": "^0.12.7"
+    "lodash": "^4.17.11"
   }
 }

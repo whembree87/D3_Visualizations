@@ -51,7 +51,7 @@ function getTopKMostAfflictedCountries(gender, k) {
     }));
 
     return {
-        y: 'Deaths, rate per 100k',
+        y: 'Global opioid deaths for all ages, rate per 100k',
         series: series,
         years: years
     }
@@ -62,6 +62,8 @@ function updateChart() {
     const k = $("#total-countries-select").val();
 
     const data = getTopKMostAfflictedCountries(gender, k);
+
+    console.log(data);
 
     d3.select("svg").remove();
 
