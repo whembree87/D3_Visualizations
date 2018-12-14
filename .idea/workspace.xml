@@ -3,20 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e24c39e6-1471-43e7-a6d7-b62f2ca47a06" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/css/bootstrap.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/css/bootstrap.min.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/css/jquery-ui.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/css/jquery-ui.min.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/css/jquery-ui.structure.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/css/jquery-ui.structure.min.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/css/jquery-ui.theme.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/css/jquery-ui.theme.min.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/data/IHME_opioid_data.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/data/IHME_opioid_data.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/js/bootstrap.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/js/bootstrap.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/js/d3.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/js/d3.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/js/jquery-ui.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/js/jquery-ui.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/js/jquery.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/js/jquery.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/js/lodash.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/js/lodash.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LineChart/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/Visualization/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -30,11 +16,24 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="scratch.txt" pinned="false" current-in-tab="true">
+      <file leaf-file-name="scratch.txt" pinned="false" current-in-tab="false">
         <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.txt">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="377">
               <caret line="142" selection-start-line="142" selection-end-line="155" selection-end-column="56" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Visualization/js/main.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1890">
+              <caret line="242" column="59" selection-start-line="242" selection-start-column="38" selection-end-line="242" selection-end-column="59" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+                <element signature="n#!!block;n#updateLineChart#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -72,6 +71,7 @@
         <option value="$PROJECT_DIR$/LineChart/index.html" />
         <option value="$PROJECT_DIR$/LineChart/css/style.css" />
         <option value="$PROJECT_DIR$/LineChart/js/main.js" />
+        <option value="$PROJECT_DIR$/Visualization/js/main.js" />
       </list>
     </option>
   </component>
@@ -81,15 +81,12 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="NodeModulesDirectoryManager">
-    <handled-path value="$PROJECT_DIR$/node_modules" />
-  </component>
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths>
       <path value="$PROJECT_DIR$/package.json" />
     </packageJsonPaths>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds">
     <option name="x" value="90" />
     <option name="y" value="23" />
     <option name="width" value="1180" />
@@ -112,6 +109,12 @@
               <item name="d3_test" type="b2602c69:ProjectViewProjectNode" />
               <item name="d3_test" type="462c0819:PsiDirectoryNode" />
               <item name="Visualization" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="d3_test" type="b2602c69:ProjectViewProjectNode" />
+              <item name="d3_test" type="462c0819:PsiDirectoryNode" />
+              <item name="Visualization" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -157,15 +160,16 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1544632333315</updated>
-      <workItem from="1544632334691" duration="43623000" />
+      <workItem from="1544632334691" duration="44185000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="43623000" />
+    <option name="totallyTimeSpent" value="44185000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="90" y="23" width="1180" height="787" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21311475" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -247,21 +251,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Visualization/js/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-965">
-          <caret line="155" column="99" selection-start-line="155" selection-start-column="99" selection-end-line="155" selection-end-column="99" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="n#!!block;n#updateLineChart#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="377">
           <caret line="142" selection-start-line="142" selection-end-line="155" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Visualization/js/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1890">
+          <caret line="242" column="59" selection-start-line="242" selection-start-column="38" selection-end-line="242" selection-end-column="59" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="n#!!block;n#updateLineChart#0" />
+          </folding>
         </state>
       </provider>
     </entry>
