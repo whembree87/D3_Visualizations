@@ -214,11 +214,12 @@ function updateDonutChart() {
 }
 
 function getTopKMostAfflictedCountries(gender, k) {
+    // Group by country for gender
     const genderData = _.filter(cleanData, (obj) => { return obj.sex_name === gender });
 
     const genderDataByCountry = _.groupBy(genderData, 'location_name');
 
-    // Take historical average and return top k
+    // Take historical average for top k
     const avgDeathRateByCountry = _.map(genderDataByCountry, (objs, key) => ({
         country_name: key,
         country_data: objs,
