@@ -1,13 +1,11 @@
 /*
-* Inspiration : https://beta.observablehq.com/@mbostock/d3-multi-line-chart#chart
+Inspiration : https://beta.observablehq.com/@mbostock/d3-multi-line-chart#chart,
+              https://beta.observablehq.com/@mbostock/d3-donut-chart
 */
 
-const margin = ({top: 20, right: 20, bottom: 30, left: 20});
-const width = 1100, height = 500;
-
 // Event listeners
-$("#gender-select").on("change", updateLineChart);
-$("#total-countries-select").on("change", updateLineChart);
+$("#gender-select").on("change", updateLineChart, updateDonutChart);
+$("#total-countries-select").on("change", updateLineChart, updateDonutChart);
 
 d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
     const parseYear = d3.timeParse("%Y");
@@ -29,43 +27,18 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
 
     // Call for first time
     updateLineChart();
+    updateDonutChart();
 });
 
-function getTopKMostAfflictedCountries(gender, k) {
-    const genderData = _.filter(cleanData, (obj) => { return obj.sex_name === gender });
-
-    const genderDataByCountry = _.groupBy(genderData, 'location_name');
-
-    const years = _.sortBy(_.map(_.sample(genderDataByCountry), (obj) => { return obj.year }));// Ascending
-
-    // Take historical average and return top k
-    const avgDeathRateByCountry =_.map(genderDataByCountry, (objs) => ({
-        'country_data': objs,
-        'avg_death_rate': _.meanBy(objs, (obj) => { return obj.val; })
-    }));
-
-    const topKHighest = _.map(_.orderBy(avgDeathRateByCountry, ['avg_death_rate'], ['desc']),
-        (obj) => {return obj.country_data}).slice(0, k);
-
-    const topKHighestByCountry = _.groupBy(_.flatten(topKHighest), 'location_name');
-
-    const countryData  = _.map(topKHighestByCountry, (objs, key) => ({
-        country_name: key,
-        death_rates: _.map(objs, (obj) => {  return obj.val })
-    }));
-
-    return {
-        country_data: countryData,
-        years: years
-    }
-}
-
 function updateLineChart() {
+    const margin = ({top: 20, right: 20, bottom: 30, left: 20});
+    const width = 600, height = 400;
+
     const gender = $("#gender-select").val();
 
     const k = $("#total-countries-select").val();
 
-    const data = getTopKMostAfflictedCountries(gender, k);
+    const data = getTopKMostAfflictedCountries(gender, k)['line_chart_data'];
 
     d3.select("svg").remove();
 
@@ -96,7 +69,7 @@ function updateLineChart() {
         .x((d, i) => x(data.years[i]))
         .y(d => y(d));
 
-    const svg = d3.select("#chart-area").append('svg')
+    const svg = d3.select("#line-chart").append('svg')
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
@@ -108,7 +81,7 @@ function updateLineChart() {
 
     const lineColors = d3.scaleOrdinal(d3.schemePaired);
 
-   const path = svg.append("g")
+    const path = svg.append("g")
         .selectAll("path")
         .data(data.country_data)
         .enter().append("path")
@@ -127,15 +100,15 @@ function updateLineChart() {
 
         if ("ontouchstart" in document)
             svg
-            .style("-webkit-tap-highlight-color", "transparent")
-            .on("touchmove", moved)
-            .on("touchstart", entered)
-            .on("touchend", left);
+                .style("-webkit-tap-highlight-color", "transparent")
+                .on("touchmove", moved)
+                .on("touchstart", entered)
+                .on("touchend", left);
         else
             svg
-            .on("mousemove", moved)
-            .on("mouseenter", entered)
-            .on("mouseleave", left);
+                .on("mousemove", moved)
+                .on("mouseenter", entered)
+                .on("mouseleave", left);
 
         const dot = svg.append("g")
             .attr("display", "none");
@@ -171,6 +144,114 @@ function updateLineChart() {
         function left() {
             path.style("mix-blend-mode", "multiply").attr("stroke", d => lineColors(d.country_name));
             dot.attr("display", "none");
+        }
+    }
+}
+
+function updateDonutChart() {
+    const gender = $("#gender-select").val();
+
+    const k = $("#total-countries-select").val();
+
+    const data = getTopKMostAfflictedCountries(gender, k)['donut_chart_data']['topKCountryAvgData'];
+
+    d3.select("svg").remove();
+
+    updateLineChart();
+
+    const width = 600, height = Math.min(width, 300);
+
+    const radius = Math.min(width, height) / 2;
+
+    const arc = d3.arc().innerRadius(radius * 0.67).outerRadius(radius - 1);
+
+    const pie = d3.pie()
+        .padAngle(0.07)
+        .sort(null)
+        .value(d => d.value);
+
+    const arcs = pie(data);
+
+    const color = d3.scaleOrdinal()
+        .domain(data.map(d => d.name))
+        .range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), data.length).reverse());
+
+    const svg = d3.select("#donut-chart")
+        .append("svg")
+        .attr('width', width)
+        .attr('height', height)
+        .attr("text-anchor", "middle")
+        .style("font", "12px sans-serif");
+
+    const g = svg.append("g")
+        .attr("transform", `translate(${width / 2},${height / 2})`);
+
+    g.selectAll("path")
+        .data(arcs)
+        .enter().append("path")
+        .attr("fill", d => color(d.data.name))
+        .attr("d", arc)
+        .append("title")
+        .text(d => `${d.data.name}: ${d.data.value.toLocaleString()}`);
+
+    const text = g.selectAll("text")
+        .data(arcs)
+        .enter().append("text")
+        .attr("transform", d => `translate(${arc.centroid(d)})`)
+        .attr("dy", "0.35em");
+
+    text.append("tspan")
+        .attr("x", 0)
+        .attr("y", "-0.7em")
+        .style("font-weight", "bold")
+        .text(d => d.data.name);
+
+    text.filter(d => (d.endAngle - d.startAngle) > 0.25).append("tspan")
+        .attr("x", 0)
+        .attr("y", "0.7em")
+        .attr("fill-opacity", 0.7)
+        .text(d => d.data.value.toLocaleString());
+}
+
+function getTopKMostAfflictedCountries(gender, k) {
+    const genderData = _.filter(cleanData, (obj) => { return obj.sex_name === gender });
+
+    const genderDataByCountry = _.groupBy(genderData, 'location_name');
+
+    // Take historical average and return top k
+    const avgDeathRateByCountry = _.map(genderDataByCountry, (objs, key) => ({
+        country_name: key,
+        country_data: objs,
+        avg_death_rate: _.meanBy(objs, (obj) => { return obj.val; })
+    }));
+
+    const topKHighest = _.map(_.orderBy(avgDeathRateByCountry, ['avg_death_rate'], ['desc']),
+        (obj) => {return obj.country_data}).slice(0, k);
+
+    const topKHighestByCountry = _.groupBy(_.flatten(topKHighest), 'location_name');
+
+    // Line chart
+    const years = _.sortBy(_.map(_.sample(genderDataByCountry), (obj) => { return obj.year }));// Ascending
+
+    const countryData  = _.map(topKHighestByCountry, (objs, key) => ({
+        country_name: key,
+        death_rates: _.map(objs, (obj) => {  return obj.val })
+    }));
+
+    // Donut chart
+    const allCountryAvgData = _.map(avgDeathRateByCountry, (obj) => ({
+        name: obj.country_name,
+        value: obj.avg_death_rate }));
+
+    const topKCountryAvgData = _.orderBy(allCountryAvgData, ['value'], ['desc']).slice(0, k);
+
+    return {
+        line_chart_data : {
+            country_data: countryData,
+            years: years
+        },
+        donut_chart_data: {
+            topKCountryAvgData
         }
     }
 }

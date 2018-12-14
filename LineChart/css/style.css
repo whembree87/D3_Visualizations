@@ -13,6 +13,10 @@
     padding: 5px 0px;
 }
 
-#gender-select {
-    margin-bottom: 15px;
+#donut-header {
+    text-align: center;
+}
+
+#line-header {
+    text-align: center;
 }
