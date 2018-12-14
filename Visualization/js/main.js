@@ -32,7 +32,7 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
 
 function updateLineChart() {
     const margin = ({top: 20, right: 20, bottom: 30, left: 20});
-    const width = 600, height = 400;
+    const width = 1000, height = 400;
 
     const gender = $("#gender-select").val();
 
@@ -62,7 +62,7 @@ function updateLineChart() {
             .attr("x", 3)
             .attr("text-anchor", "start")
             .attr("font-weight", "bold")
-            .text('Global opioid deaths for all ages, rate per 100k'));
+            .text('Deaths, rate per 100k'));
 
     const line = d3.line()
         .defined(d => !isNaN(d))
@@ -153,13 +153,13 @@ function updateDonutChart() {
 
     const k = $("#total-countries-select").val();
 
-    const data = getTopKMostAfflictedCountries(gender, k)['donut_chart_data']['topKCountryAvgData'];
+    const data = getTopKMostAfflictedCountries(gender, k)['donut_chart_data']['topKCountriesAvgData'];
 
     d3.select("svg").remove();
 
     updateLineChart();
 
-    const width = 600, height = Math.min(width, 300);
+    const width = 600, height = 350;
 
     const radius = Math.min(width, height) / 2;
 
@@ -233,25 +233,25 @@ function getTopKMostAfflictedCountries(gender, k) {
     // Line chart
     const years = _.sortBy(_.map(_.sample(genderDataByCountry), (obj) => { return obj.year }));// Ascending
 
-    const countryData  = _.map(topKHighestByCountry, (objs, key) => ({
+    const topKCountriesData  = _.map(topKHighestByCountry, (objs, key) => ({
         country_name: key,
         death_rates: _.map(objs, (obj) => {  return obj.val })
     }));
 
     // Donut chart
-    const allCountryAvgData = _.map(avgDeathRateByCountry, (obj) => ({
+    const allCountriesAvgData = _.map(avgDeathRateByCountry, (obj) => ({
         name: obj.country_name,
         value: obj.avg_death_rate }));
 
-    const topKCountryAvgData = _.orderBy(allCountryAvgData, ['value'], ['desc']).slice(0, k);
+    const topKCountriesAvgData = _.orderBy(allCountriesAvgData, ['value'], ['desc']).slice(0, k);
 
     return {
         line_chart_data : {
-            country_data: countryData,
+            country_data: topKCountriesData,
             years: years
         },
         donut_chart_data: {
-            topKCountryAvgData
+            topKCountriesAvgData
         }
     }
 }
