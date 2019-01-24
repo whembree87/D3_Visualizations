@@ -3,9 +3,8 @@ Inspiration : https://beta.observablehq.com/@mbostock/d3-multi-line-chart#chart,
               https://beta.observablehq.com/@mbostock/d3-donut-chart
 */
 
-// Event listeners
-$("#gender-select").on("change", updateLineChart, updateDonutChart);
-$("#total-countries-select").on("change", updateLineChart, updateDonutChart);
+$("#gender-select").on("change", updateCharts);
+$("#total-countries-select").on("change", updateCharts);
 
 d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
     const parseYear = d3.timeParse("%Y");
@@ -26,21 +25,29 @@ d3.csv("data/IHME_opioid_data.csv").then((rawData) => {
     cleanData = rawData;
 
     // Call for first time
-    updateLineChart();
-    updateDonutChart();
+    updateCharts();
 });
 
-function updateLineChart() {
+function updateCharts() {
+    const gender = $("#gender-select").val();
+    const k = $("#total-countries-select").val();
+    const lineChartData = getTopKMostAfflictedCountries(gender, k)['line_chart_data'];
+    const donutChartData =  getTopKMostAfflictedCountries(gender, k)['donut_chart_data']['topKCountriesAvgData'];
+
+    removeSVGs();
+
+    updateLineChart(lineChartData);
+    updateDonutChart(donutChartData);
+}
+
+function removeSVGs() {
+    d3.select("#line-chart > svg").remove();
+    d3.select("#donut-chart > svg").remove();
+}
+
+function updateLineChart(data) {
     const margin = ({top: 20, right: 20, bottom: 30, left: 20});
     const width = 1000, height = 400;
-
-    const gender = $("#gender-select").val();
-
-    const k = $("#total-countries-select").val();
-
-    const data = getTopKMostAfflictedCountries(gender, k)['line_chart_data'];
-
-    d3.select("svg").remove();
 
     const x = d3.scaleTime()
         .domain(d3.extent(data.years))
@@ -148,21 +155,9 @@ function updateLineChart() {
     }
 }
 
-function updateDonutChart() {
-    const gender = $("#gender-select").val();
-
-    const k = $("#total-countries-select").val();
-
-    const data = getTopKMostAfflictedCountries(gender, k)['donut_chart_data']['topKCountriesAvgData'];
-
-    d3.select("svg").remove();
-
-    updateLineChart();
-
+function updateDonutChart(data) {
     const width = 600, height = 350;
-
     const radius = Math.min(width, height) / 2;
-
     const arc = d3.arc().innerRadius(radius * 0.67).outerRadius(radius - 1);
 
     const pie = d3.pie()
