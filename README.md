@@ -1,4 +1,3 @@
-# IHME_Visualization
-* Visualizations to reveal what population is most affected by opioid use disorders
+# D3 Visualizations
 * Technologies : D3, Express, Bootstrap, Lodash
-* Heroku URL : https://pacific-stream-89029.herokuapp.com/
+* Heroku URL : https://cryptic-fortress-92097.herokuapp.com/navigation.html
