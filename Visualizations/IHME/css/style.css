@@ -1,0 +1,29 @@
+#donut-chart svg {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin-bottom: 30px;
+}
+
+#line-chart svg {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+#logo {
+    height:50px;
+}
+
+.navbar-brand {
+    height: 60px;
+    padding: 5px 0px;
+}
+
+#donut-header {
+    text-align: center;
+}
+
+#line-header {
+    text-align: center;
+}
