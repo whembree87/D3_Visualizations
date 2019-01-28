@@ -2,6 +2,9 @@
 *    main.js
 *    Mastering Data Visualizations with D3.js
 *    Project 2 - Gapminder Clone
+*
+*
+*    Currently under construction
 */
 var margin = { left:80, right:20, top:50, bottom:100 };
 
